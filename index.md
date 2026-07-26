@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Retenciones</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d0f14;--surface:#161922;--surface2:#1e2330;--border:#2a3045;
+    --accent:#00c896;--text:#e8ecf4;--muted:#6b7591;--warn:#ffb547;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding:0 0 60px}
+  header{background:var(--surface);border-bottom:1px solid var(--border);padding:26px 40px;display:flex;align-items:center;gap:14px}
+  .logo{width:38px;height:38px;border-radius:9px;background:var(--accent);color:#0d0f14;font-family:'Bebas Neue',sans-serif;font-size:1.4rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  header h1{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:1.5px;line-height:1}
+  header h1 span{color:var(--accent)}
+  header p{font-size:.8rem;color:var(--muted);margin-top:2px}
+  .tabs{display:flex;padding:0 40px;background:var(--surface);border-bottom:2px solid var(--border)}
+  .tab-btn{padding:16px 28px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;letter-spacing:.5px;background:none;border:none;border-bottom:3px solid transparent;color:var(--muted);cursor:pointer;transition:all .2s;margin-bottom:-2px}
+  .tab-btn:hover{color:var(--text)}
+  .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .tab-content{display:none;padding:40px;max-width:560px;margin:0 auto}
+  .tab-content.active{display:block}
+  .calc-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px}
+  .calc-card h2{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:1.5px;margin-bottom:26px;display:flex;align-items:center;gap:10px}
+  .calc-card h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+  .form-group{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+  label{font-size:.76rem;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--muted)}
+  .input-wrap{position:relative}
+  .input-wrap .cur{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.95rem;pointer-events:none}
+  input[type=number]{background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:1rem;padding:13px 16px 13px 38px;width:100%;outline:none;transition:border-color .2s}
+  input[type=number]:focus{border-color:var(--accent)}
+  input[type=number]::-webkit-inner-spin-button{opacity:.4}
+  .divider{height:1px;background:var(--border);margin:22px 0}
+  .result-row{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-radius:10px;background:var(--surface2);margin-bottom:12px}
+  .result-row .lbl{font-size:.82rem;font-weight:600;color:var(--muted);letter-spacing:.3px}
+  .result-row .val{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:.5px}
+  .result-row.bono{background:rgba(0,200,150,.1);border:1px solid rgba(0,200,150,.35)}
+  .result-row.bono .lbl{color:var(--accent)}
+  .result-row.bono .val{color:var(--accent);font-size:1.5rem}
+  .result-row.neg .val{color:#ff4f6a}
+  .note-box{margin-top:22px;background:rgba(255,181,71,.08);border:1px solid rgba(255,181,71,.3);border-radius:10px;padding:16px 18px;font-size:.84rem;line-height:1.6;color:#d8dce8;display:flex;gap:12px;align-items:flex-start}
+  .note-box .ic{font-size:1.2rem;flex-shrink:0;margin-top:1px}
+  .note-box strong{color:var(--warn)}
+  @media(max-width:600px){
+    header{padding:20px}
+    header h1{font-size:1.5rem}
+    .tabs{padding:0 16px}
+    .tab-btn{padding:14px 14px;font-size:.78rem}
+    .tab-content{padding:18px}
+    .calc-card{padding:20px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">R</div>
+  <div>
+    <h1>CALCULADORA DE <span>RETENCIONES</span></h1>
+    <p>Deportes / Casino · 10% de bono sobre ganancia Rushbet</p>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('co',this)">🇨🇴 Colombia</button>
+  <button class="tab-btn" onclick="switchTab('mx',this)">🇲🇽 México</button>
+  <button class="tab-btn" onclick="switchTab('pe',this)">🇵🇪 Perú</button>
+</div>
+
+<!-- ===== COLOMBIA ===== -->
+<div id="tab-co" class="tab-content active">
+  <div class="calc-card">
+    <h2><span class="dot"></span>Retención Colombia (COP)</h2>
+
+    <div class="form-group">
+      <label>Depósitos totales</label>
+      <div class="input-wrap"><span class="cur">$</span><input type="number" id="co-dep" placeholder="0" oninput="calc('co')"></div>
+    </div>
+    <div class="form-group">
+      <label>Retiros totales</label>
+      <div class="input-wrap"><span class="cur">$</span><input type="number" id="co-ret" placeholder="0" oninput="calc('co')"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="result-row" id="co-ganancia-row">
+      <span class="lbl">Total de ganancia Rushbet</span>
+      <span class="val" id="co-ganancia">$ 0.00</span>
+    </div>
+    <div class="result-row bono">
+      <span class="lbl">Cantidad del bono (10%)</span>
+      <span class="val" id="co-bono">$ 0.00</span>
+    </div>
+
+    <div class="note-box"><span class="ic">📎</span><div>Recuerda adjuntar la <strong>captura de este cálculo</strong> en el post de Slack al solicitar la retención.</div></div>
+  </div>
+</div>
+
+<!-- ===== MEXICO ===== -->
+<div id="tab-mx" class="tab-content">
+  <div class="calc-card">
+    <h2><span class="dot"></span>Retención México (MXN)</h2>
+
+    <div class="form-group">
+      <label>Depósitos totales</label>
+      <div class="input-wrap"><span class="cur">$</span><input type="number" id="mx-dep" placeholder="0" oninput="calc('mx')"></div>
+    </div>
+    <div class="form-group">
+      <label>Retiros totales</label>
+      <div class="input-wrap"><span class="cur">$</span><input type="number" id="mx-ret" placeholder="0" oninput="calc('mx')"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="result-row" id="mx-ganancia-row">
+      <span class="lbl">Total de ganancia Rushbet</span>
+      <span class="val" id="mx-ganancia">$ 0.00</span>
+    </div>
+    <div class="result-row bono">
+      <span class="lbl">Cantidad del bono (10%)</span>
+      <span class="val" id="mx-bono">$ 0.00</span>
+    </div>
+
+    <div class="note-box"><span class="ic">📎</span><div>Recuerda adjuntar la <strong>captura de este cálculo</strong> en el post de Slack al solicitar la retención.</div></div>
+  </div>
+</div>
+
+<!-- ===== PERU ===== -->
+<div id="tab-pe" class="tab-content">
+  <div class="calc-card">
+    <h2><span class="dot"></span>Retención Perú (PEN)</h2>
+
+    <div class="form-group">
+      <label>Depósitos totales</label>
+      <div class="input-wrap"><span class="cur">S/</span><input type="number" id="pe-dep" placeholder="0" oninput="calc('pe')"></div>
+    </div>
+    <div class="form-group">
+      <label>Retiros totales</label>
+      <div class="input-wrap"><span class="cur">S/</span><input type="number" id="pe-ret" placeholder="0" oninput="calc('pe')"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="result-row" id="pe-ganancia-row">
+      <span class="lbl">Total de ganancia Rushbet</span>
+      <span class="val" id="pe-ganancia">S/ 0.00</span>
+    </div>
+    <div class="result-row bono">
+      <span class="lbl">Cantidad del bono (10%)</span>
+      <span class="val" id="pe-bono">S/ 0.00</span>
+    </div>
+
+    <div class="note-box"><span class="ic">📎</span><div>Recuerda adjuntar la <strong>captura de este cálculo</strong> en el post de Slack al solicitar la retención.</div></div>
+  </div>
+</div>
+
+<script>
+const symbols = { co:'$', mx:'$', pe:'S/' };
+
+function fmt(n){
+  return n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function calc(pfx){
+  const dep = parseFloat(document.getElementById(pfx+'-dep').value) || 0;
+  const ret = parseFloat(document.getElementById(pfx+'-ret').value) || 0;
+  const ganancia = dep - ret;          // =B2-B3
+  const bono = ganancia * 0.10;        // =B4*10%
+  const sym = symbols[pfx];
+
+  const gEl = document.getElementById(pfx+'-ganancia');
+  const gRow = document.getElementById(pfx+'-ganancia-row');
+  gEl.textContent = sym+' '+fmt(ganancia);
+  gRow.classList.toggle('neg', ganancia < 0);
+
+  document.getElementById(pfx+'-bono').textContent = sym+' '+fmt(bono);
+}
+
+function switchTab(id, btn){
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+['co','mx','pe'].forEach(calc);
+</script>
+
+</body>
+</html>
+[index.html](https://github.com/user-attachments/files/30381186/index.html)

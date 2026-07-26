@@ -1,3 +1,4 @@
+[index (28).html](https://github.com/user-attachments/files/30394894/index.28.html)
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -41,9 +42,15 @@
   .result-row.bono .lbl{color:var(--accent)}
   .result-row.bono .val{color:var(--accent);font-size:1.5rem}
   .result-row.neg .val{color:#ff4f6a}
+  .result-row.bono.insuficiente{background:rgba(255,60,90,.12);border:1px solid rgba(255,60,90,.45)}
+  .result-row.bono.insuficiente .lbl{color:#ff4f6a;text-transform:none;letter-spacing:.2px;font-size:.85rem}
+  .result-row.bono.insuficiente .val{display:none}
   .note-box{margin-top:22px;background:rgba(255,181,71,.08);border:1px solid rgba(255,181,71,.3);border-radius:10px;padding:16px 18px;font-size:.84rem;line-height:1.6;color:#d8dce8;display:flex;gap:12px;align-items:flex-start}
   .note-box .ic{font-size:1.2rem;flex-shrink:0;margin-top:1px}
   .note-box strong{color:var(--warn)}
+  .warn-box{margin-bottom:12px;background:rgba(255,181,71,.1);border:1px solid rgba(255,181,71,.4);border-radius:10px;padding:14px 18px;font-size:.83rem;line-height:1.5;color:#f4e3c4;display:flex;gap:10px;align-items:flex-start}
+  .warn-box .ic{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+  .warn-box strong{color:var(--warn)}
   @media(max-width:600px){
     header{padding:20px}
     header h1{font-size:1.5rem}
@@ -73,7 +80,7 @@
 <!-- ===== COLOMBIA ===== -->
 <div id="tab-co" class="tab-content active">
   <div class="calc-card">
-    <h2><span class="dot"></span>Retención Colombia (COP)</h2>
+    <h2><span class="dot"></span>Retención Colombia (COP) 🇨🇴</h2>
 
     <div class="form-group">
       <label>Depósitos totales</label>
@@ -90,19 +97,20 @@
       <span class="lbl">Total de ganancia Rushbet</span>
       <span class="val" id="co-ganancia">$ 0.00</span>
     </div>
-    <div class="result-row bono">
-      <span class="lbl">Cantidad del bono (10%)</span>
+    <div class="warn-box" id="co-warn" style="display:none"><span class="ic">⚠️</span><div>El cliente debe dejar mínimo <strong>$1.000.000 COP</strong> en ganancias desde la última cortesía/retención para aplicar.</div></div>
+    <div class="result-row bono" id="co-bono-row">
+      <span class="lbl" id="co-bono-lbl">Cantidad del bono (10%)</span>
       <span class="val" id="co-bono">$ 0.00</span>
     </div>
 
-    <div class="note-box"><span class="ic">📎</span><div>Recuerda adjuntar la <strong>captura de este cálculo</strong> en el post de Slack al solicitar la retención.</div></div>
+    <div class="note-box" id="co-note"><span class="ic">📎</span><div id="co-note-text">✅ <strong>Sí aplica para retención.</strong> Recuerda adjuntar la captura de este cálculo en el post de Slack al solicitar la retención.</div></div>
   </div>
 </div>
 
 <!-- ===== MEXICO ===== -->
 <div id="tab-mx" class="tab-content">
   <div class="calc-card">
-    <h2><span class="dot"></span>Retención México (MXN)</h2>
+    <h2><span class="dot"></span>Retención México (MXN) 🇲🇽</h2>
 
     <div class="form-group">
       <label>Depósitos totales</label>
@@ -119,19 +127,20 @@
       <span class="lbl">Total de ganancia Rushbet</span>
       <span class="val" id="mx-ganancia">$ 0.00</span>
     </div>
-    <div class="result-row bono">
-      <span class="lbl">Cantidad del bono (10%)</span>
+    <div class="warn-box" id="mx-warn" style="display:none"><span class="ic">⚠️</span><div>El cliente debe dejar mínimo <strong>$5.000 MXN</strong> en ganancias desde la última cortesía/retención para aplicar.</div></div>
+    <div class="result-row bono" id="mx-bono-row">
+      <span class="lbl" id="mx-bono-lbl">Cantidad del bono (10%)</span>
       <span class="val" id="mx-bono">$ 0.00</span>
     </div>
 
-    <div class="note-box"><span class="ic">📎</span><div>Recuerda adjuntar la <strong>captura de este cálculo</strong> en el post de Slack al solicitar la retención.</div></div>
+    <div class="note-box" id="mx-note"><span class="ic">📎</span><div id="mx-note-text">✅ <strong>Sí aplica para retención.</strong> Recuerda adjuntar la captura de este cálculo en el post de Slack al solicitar la retención.</div></div>
   </div>
 </div>
 
 <!-- ===== PERU ===== -->
 <div id="tab-pe" class="tab-content">
   <div class="calc-card">
-    <h2><span class="dot"></span>Retención Perú (PEN)</h2>
+    <h2><span class="dot"></span>Retención Perú (PEN) 🇵🇪</h2>
 
     <div class="form-group">
       <label>Depósitos totales</label>
@@ -148,17 +157,19 @@
       <span class="lbl">Total de ganancia Rushbet</span>
       <span class="val" id="pe-ganancia">S/ 0.00</span>
     </div>
-    <div class="result-row bono">
-      <span class="lbl">Cantidad del bono (10%)</span>
+    <div class="warn-box" id="pe-warn" style="display:none"><span class="ic">⚠️</span><div>El cliente debe dejar mínimo <strong>S/ 500 PEN</strong> en ganancias desde la última cortesía/retención para aplicar.</div></div>
+    <div class="result-row bono" id="pe-bono-row">
+      <span class="lbl" id="pe-bono-lbl">Cantidad del bono (10%)</span>
       <span class="val" id="pe-bono">S/ 0.00</span>
     </div>
 
-    <div class="note-box"><span class="ic">📎</span><div>Recuerda adjuntar la <strong>captura de este cálculo</strong> en el post de Slack al solicitar la retención.</div></div>
+    <div class="note-box" id="pe-note"><span class="ic">📎</span><div id="pe-note-text">✅ <strong>Sí aplica para retención.</strong> Recuerda adjuntar la captura de este cálculo en el post de Slack al solicitar la retención.</div></div>
   </div>
 </div>
 
 <script>
 const symbols = { co:'$', mx:'$', pe:'S/' };
+const minimos  = { co:1000000, mx:5000, pe:500 }; // mínimo de ganancia desde la última cortesía/retención
 
 function fmt(n){
   return n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
@@ -176,7 +187,22 @@ function calc(pfx){
   gEl.textContent = sym+' '+fmt(ganancia);
   gRow.classList.toggle('neg', ganancia < 0);
 
-  document.getElementById(pfx+'-bono').textContent = sym+' '+fmt(bono);
+  const noAplica = ganancia < minimos[pfx];
+
+  const warnBox = document.getElementById(pfx+'-warn');
+  warnBox.style.display = noAplica ? 'flex' : 'none';
+
+  const bonoRow = document.getElementById(pfx+'-bono-row');
+  const bonoLbl = document.getElementById(pfx+'-bono-lbl');
+  const bonoVal = document.getElementById(pfx+'-bono');
+
+  bonoRow.classList.toggle('insuficiente', noAplica);
+  bonoLbl.textContent = noAplica ? '⚠ No aplica retención por pocas ganancias para Rush' : 'Cantidad del bono (10%)';
+  bonoVal.textContent = sym+' '+fmt(bono);
+
+  // Aviso de Slack: solo se muestra si SÍ aplica (cumple el mínimo de ganancia del país)
+  const noteBox = document.getElementById(pfx+'-note');
+  noteBox.style.display = noAplica ? 'none' : 'flex';
 }
 
 function switchTab(id, btn){
@@ -191,4 +217,3 @@ function switchTab(id, btn){
 
 </body>
 </html>
-[index.html](https://github.com/user-attachments/files/30381186/index.html)

@@ -82,11 +82,11 @@
 
     <div class="form-group">
       <label>Depósitos totales</label>
-      <div class="input-wrap"><span class="cur">$</span><input type="text" inputmode="decimal" id="co-dep" placeholder="0" oninput="calc('co')"></div>
+      <div class="input-wrap"><span class="cur">$</span><input type="text" inputmode="decimal" id="co-dep" placeholder="0" oninput="onFieldInput(this,'co')"></div>
     </div>
     <div class="form-group">
       <label>Retiros totales</label>
-      <div class="input-wrap"><span class="cur">$</span><input type="text" inputmode="decimal" id="co-ret" placeholder="0" oninput="calc('co')"></div>
+      <div class="input-wrap"><span class="cur">$</span><input type="text" inputmode="decimal" id="co-ret" placeholder="0" oninput="onFieldInput(this,'co')"></div>
     </div>
 
     <div class="divider"></div>
@@ -112,11 +112,11 @@
 
     <div class="form-group">
       <label>Depósitos totales</label>
-      <div class="input-wrap"><span class="cur">$</span><input type="text" inputmode="decimal" id="mx-dep" placeholder="0" oninput="calc('mx')"></div>
+      <div class="input-wrap"><span class="cur">$</span><input type="text" inputmode="decimal" id="mx-dep" placeholder="0" oninput="onFieldInput(this,'mx')"></div>
     </div>
     <div class="form-group">
       <label>Retiros totales</label>
-      <div class="input-wrap"><span class="cur">$</span><input type="text" inputmode="decimal" id="mx-ret" placeholder="0" oninput="calc('mx')"></div>
+      <div class="input-wrap"><span class="cur">$</span><input type="text" inputmode="decimal" id="mx-ret" placeholder="0" oninput="onFieldInput(this,'mx')"></div>
     </div>
 
     <div class="divider"></div>
@@ -142,11 +142,11 @@
 
     <div class="form-group">
       <label>Depósitos totales</label>
-      <div class="input-wrap"><span class="cur">S/</span><input type="text" inputmode="decimal" id="pe-dep" placeholder="0" oninput="calc('pe')"></div>
+      <div class="input-wrap"><span class="cur">S/</span><input type="text" inputmode="decimal" id="pe-dep" placeholder="0" oninput="onFieldInput(this,'pe')"></div>
     </div>
     <div class="form-group">
       <label>Retiros totales</label>
-      <div class="input-wrap"><span class="cur">S/</span><input type="text" inputmode="decimal" id="pe-ret" placeholder="0" oninput="calc('pe')"></div>
+      <div class="input-wrap"><span class="cur">S/</span><input type="text" inputmode="decimal" id="pe-ret" placeholder="0" oninput="onFieldInput(this,'pe')"></div>
     </div>
 
     <div class="divider"></div>
@@ -173,31 +173,27 @@ function fmt(n){
   return n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 
-// Limpia texto pegado desde Excel u otro lado: quita $, S/, espacios, letras y separadores de miles
-function parseNum(str){
-  if(!str) return 0;
-  let clean = String(str).trim().replace(/[^0-9.,-]/g,''); // deja solo números, puntos, comas y signo -
-  const lastComma = clean.lastIndexOf(',');
-  const lastDot = clean.lastIndexOf('.');
-  if(lastComma > -1 && lastDot > -1){
-    // Vienen ambos: el que esté más a la derecha es el separador decimal
-    if(lastComma > lastDot){
-      clean = clean.replace(/\./g,'').replace(',', '.');
-    } else {
-      clean = clean.replace(/,/g,'');
-    }
-  } else if(lastComma > -1){
-    // Solo coma: si tiene exactamente 2 dígitos después, es decimal; si no, es separador de miles
-    const decimals = clean.length - lastComma - 1;
-    clean = decimals === 2 ? clean.replace(',', '.') : clean.replace(/,/g,'');
-  }
-  const n = parseFloat(clean);
-  return isNaN(n) ? 0 : n;
+// Deja solo los dígitos (para depósitos/retiros, que son montos enteros)
+function digitsOnly(str){
+  return (str || '').replace(/[^0-9]/g,'');
+}
+
+// Formatea dígitos poniendo puntos cada 3 cifras (miles / millones): 7000000 -> 7.000.000
+function formatThousands(digits){
+  if(!digits) return '';
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+// Se dispara al escribir o pegar en los campos de depósitos/retiros
+function onFieldInput(el, pfx){
+  const digits = digitsOnly(el.value);
+  el.value = formatThousands(digits);
+  calc(pfx);
 }
 
 function calc(pfx){
-  const dep = parseNum(document.getElementById(pfx+'-dep').value);
-  const ret = parseNum(document.getElementById(pfx+'-ret').value);
+  const dep = parseInt(digitsOnly(document.getElementById(pfx+'-dep').value), 10) || 0;
+  const ret = parseInt(digitsOnly(document.getElementById(pfx+'-ret').value), 10) || 0;
   const ganancia = dep - ret;          // =B2-B3
   const bono = ganancia * 0.10;        // =B4*10%
   const sym = symbols[pfx];
@@ -234,14 +230,14 @@ function switchTab(id, btn){
 
 ['co','mx','pe'].forEach(calc);
 
-// Al pegar texto (ej. desde Excel), limpiar símbolos de moneda/espacios pero conservar el número
+// Al pegar texto (ej. desde Excel), limpiar todo lo que no sea número y ponerle puntos de miles
 document.querySelectorAll('input[type=text]').forEach(inp=>{
   inp.addEventListener('paste', function(e){
     e.preventDefault();
     const text = (e.clipboardData || window.clipboardData).getData('text');
-    const num = parseNum(text);
-    this.value = num === 0 && !/[0-9]/.test(text) ? '' : num;
-    this.dispatchEvent(new Event('input'));
+    const pfx = this.id.split('-')[0];
+    this.value = formatThousands(digitsOnly(text));
+    calc(pfx);
   });
 });
 </script>

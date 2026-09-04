@@ -173,7 +173,33 @@ function fmt(n){
   return n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 
-// Deja solo los dígitos (para depósitos/retiros, que son montos enteros)
+// Interpreta el texto pegado/escrito (ej. "398,886,915.00") y devuelve el número real,
+// reconociendo que el último . o , seguido de 1-2 cifras es el separador decimal (no miles)
+function parseNum(str){
+  let clean = String(str || '').replace(/[^0-9.,]/g,'');
+  if(!clean) return 0;
+  const lastSep = Math.max(clean.lastIndexOf(','), clean.lastIndexOf('.'));
+  if(lastSep > -1){
+    const fracLen = clean.length - lastSep - 1;
+    if(fracLen >= 1 && fracLen <= 2){
+      const intPart = clean.slice(0, lastSep).replace(/[.,]/g,'');
+      const fracPart = clean.slice(lastSep + 1);
+      clean = (intPart || '0') + '.' + fracPart;
+    } else {
+      clean = clean.replace(/[.,]/g,'');
+    }
+  }
+  const n = parseFloat(clean);
+  return isNaN(n) ? 0 : n;
+}
+
+// Redondea a entero (los montos se manejan sin centavos) y devuelve solo los dígitos
+function digitsFromValue(str){
+  const n = Math.round(parseNum(str));
+  return n > 0 ? String(n) : '';
+}
+
+// Deja solo los dígitos de un texto ya formateado (para leer el valor final del campo)
 function digitsOnly(str){
   return (str || '').replace(/[^0-9]/g,'');
 }
@@ -184,9 +210,9 @@ function formatThousands(digits){
   return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
-// Se dispara al escribir o pegar en los campos de depósitos/retiros
+// Se dispara al escribir en los campos de depósitos/retiros
 function onFieldInput(el, pfx){
-  const digits = digitsOnly(el.value);
+  const digits = digitsFromValue(el.value);
   el.value = formatThousands(digits);
   calc(pfx);
 }
@@ -230,13 +256,13 @@ function switchTab(id, btn){
 
 ['co','mx','pe'].forEach(calc);
 
-// Al pegar texto (ej. desde Excel), limpiar todo lo que no sea número y ponerle puntos de miles
+// Al pegar texto (ej. desde Excel), reconocer los decimales (.00) y ponerle puntos de miles
 document.querySelectorAll('input[type=text]').forEach(inp=>{
   inp.addEventListener('paste', function(e){
     e.preventDefault();
     const text = (e.clipboardData || window.clipboardData).getData('text');
     const pfx = this.id.split('-')[0];
-    this.value = formatThousands(digitsOnly(text));
+    this.value = formatThousands(digitsFromValue(text));
     calc(pfx);
   });
 });
